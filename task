@@ -20,9 +20,11 @@ function help() {
 
     # Print table rows
 
-    printf "$COLUMN" "run" "" "Run cargo project.."
+    printf "$COLUMN" "run" "" "Run cargo project."
     printf "$COLUMN" "build" "" "Build the container image."
-    printf "$COLUMN" "start" "" "Start container image."
+    printf "$COLUMN" "start" "" "Start the container (detached mode)."
+    printf "$COLUMN" "stop" "" "Stop the running container."
+    printf "$COLUMN" "remove" "" "Remove the stopped container."
     printf "$COLUMN" "publish" "" "Push the container image to the registry."
 
     echo
@@ -34,15 +36,25 @@ function run() {
 }
 
 function build() {
-    docker build -t varlog .
+    docker build -t mintsystem/varlog .
 }
 
 function start() {
-    docker run -p 8080:8080 varlog
+    echo "Open url: http://localhost:8080/ui"
+    docker run -d -p 8080:8080 --name varlog mintsystem/varlog
+}
+
+function stop() {
+    docker stop varlog
+}
+
+function remove() {
+    docker rm -f varlog
 }
 
 function publish() {
-    echo "Publish container image."
+    docker tag varlog mintsystem/varlog:latest
+    docker push mintsystem/varlog:latest
 }
 
 if declare -f "$1" > /dev/null; then
