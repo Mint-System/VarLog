@@ -1,0 +1,59 @@
+#!/bin/bash
+set -e
+
+function help() {
+    echo
+    echo "task <command> [options]"
+    echo
+    echo "commands:"
+    echo
+
+    # Define column widths
+    CMD_WIDTH=10
+    OPT_WIDTH=6
+    DESC_WIDTH=40
+    COLUMN="| %-${CMD_WIDTH}s | %-${OPT_WIDTH}s | %-${DESC_WIDTH}s |\n"
+
+    # Print table header
+    printf "$COLUMN" "Command" "Option" "Description"
+    echo "|$(printf '%*s' $((CMD_WIDTH + 2)) '' | tr ' ' '-')|$(printf '%*s' $((OPT_WIDTH + 2)) '' | tr ' ' '-')|$(printf '%*s' $((DESC_WIDTH + 2)) '' | tr ' ' '-')|"
+
+    # Print table rows
+
+    printf "$COLUMN" "run" "" "Run cargo project.."
+    printf "$COLUMN" "build" "" "Build the container image."
+    printf "$COLUMN" "start" "" "Start container image."
+    printf "$COLUMN" "publish" "" "Push the container image to the registry."
+
+    echo
+}
+
+
+function run() {
+    cargo run
+}
+
+function build() {
+    docker build -t varlog .
+}
+
+function start() {
+    docker run -p 8080:8080 varlog
+}
+
+function publish() {
+    echo "Publish container image."
+}
+
+if declare -f "$1" > /dev/null; then
+    "$1" "${@:2}"
+else
+    case "$1" in
+        *)
+            echo "Unknown command: $1"
+            help
+            exit 1
+            ;;
+    esac
+fi
+
