@@ -1,5 +1,7 @@
 # VarLog
 
+[![Docker pulls](https://img.shields.io/docker/pulls/mintsystem/varlog)](https://hub.docker.com/r/mintsystem/varlog/)
+
 VarLog is a simple mock HTTP service written in Rust that logs all incoming HTTP requests.
 
 - 🌐 Accepts all HTTP methods (GET, POST, PUT, DELETE, etc.)
@@ -24,7 +26,7 @@ git clone git@github.com:Mint-System/VarLog.git
 cd VarLog
 ```
 
-### Run the service
+Run the rust app.
 
 ```bash
 task run
@@ -32,7 +34,7 @@ task run
 
 This will start the service at <http://127.0.0.1:8080>.
 
-### Interacting with VarLog
+**Interact with VarLog**
 
 You can send any HTTP request to any path on the server:
 
@@ -47,6 +49,12 @@ curl -X DELETE http://127.0.0.1:8080/resource/123
 ```
 
 To view the received requests visit <http://127.0.0.1:8080/ui> in your browser.
+
+You can also get the received requests from the api endpoint.
+
+```bash
+curl http://127.0.0.1:8080/api
+```
 
 ## Develop
 

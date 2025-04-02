@@ -7,35 +7,35 @@ function help() {
     echo
     echo "commands:"
     echo
-
     # Define column widths
-    CMD_WIDTH=10
+    CMD_WIDTH=12
     OPT_WIDTH=6
     DESC_WIDTH=40
     COLUMN="| %-${CMD_WIDTH}s | %-${OPT_WIDTH}s | %-${DESC_WIDTH}s |\n"
-
     # Print table header
     printf "$COLUMN" "Command" "Option" "Description"
     echo "|$(printf '%*s' $((CMD_WIDTH + 2)) '' | tr ' ' '-')|$(printf '%*s' $((OPT_WIDTH + 2)) '' | tr ' ' '-')|$(printf '%*s' $((DESC_WIDTH + 2)) '' | tr ' ' '-')|"
-
     # Print table rows
-
     printf "$COLUMN" "run" "" "Run cargo project."
-    printf "$COLUMN" "build" "" "Build the container image."
+    printf "$COLUMN" "build" "" "Build cargo project."
+    printf "$COLUMN" "build-image" "" "Build the container image."
     printf "$COLUMN" "start" "" "Start the container (detached mode)."
+    printf "$COLUMN" "debug" "" "Start the container in interactive mode."
     printf "$COLUMN" "stop" "" "Stop the running container."
     printf "$COLUMN" "remove" "" "Remove the stopped container."
     printf "$COLUMN" "publish" "" "Push the container image to the registry."
-
     echo
 }
-
 
 function run() {
     cargo run
 }
 
 function build() {
+    cargo build --release
+}
+
+function build-image() {
     docker build -t mintsystem/varlog .
 }
 
@@ -44,17 +44,23 @@ function start() {
     docker run -d -p 8080:8080 --name varlog mintsystem/varlog
 }
 
+function debug() {
+    echo "Starting container in interactive mode..."
+    echo "Open url: http://localhost:8080/ui"
+    docker run -it --rm -p 8080:8080 --name varlog_debug mintsystem/varlog /bin/bash
+}
+
 function stop() {
     docker stop varlog
 }
 
 function remove() {
-    docker rm -f varlog
+    docker rm -f varlog || true
 }
 
 function publish() {
-    docker tag varlog mintsystem/varlog:latest
-    docker push mintsystem/varlog:latest
+    docker tag mintsystem/varlog mintsystem/varlog:latest
+    docker --config ~/.docker/mintsystem push mintsystem/varlog:latest
 }
 
 if declare -f "$1" > /dev/null; then
@@ -65,7 +71,6 @@ else
             echo "Unknown command: $1"
             help
             exit 1
-            ;;
+        ;;
     esac
 fi
-
